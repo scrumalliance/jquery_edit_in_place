@@ -15,11 +15,9 @@ Rails with jQuery intead of prototype, references to do so:
   A plugin which subsititutes the basic rails javascript helpers based in prototype with jquery,
   I personaly don't use it, but it's well written and is a good start for jQuery + Rails.
 
-h1. How to use it
+h1. Example
 
 h2. The model:
-
-In pseudo-code
 
 <pre>
 Person
@@ -30,9 +28,11 @@ Person
 h2. The view:
 
 <pre>
-&lt;h1&gt;&lt;%= @person.name %>&lt;/h1&gt;
-&lt;h2&gt;Biography&lt;/h2&gt;
-&lt;%= @person.biography %&gt;
+<h1><span id="eip_person-name" class="eip-value"><%= @person.name %></span></h1>
+<h2>Biography</h2>
+<div id="eip_person-biography" class="eip-value">
+  <%= @person.biography %>
+</div>
 </pre>
 
 h2. The controller:
@@ -91,6 +91,20 @@ class PeopleController
 end
 </pre>
 
-h1. Options and personalization
+h2. In a helper
+
+<pre>
+def link_for_edit_in_place(path, model_name, attribute, options)
+  name = options.delete(:name) || 'edit'
+  read_data = options.delete(:read_data) || false
+  options[:class] += ' trigger' if options[:class]
+  options[:class] = 'trigger' unless options[:class]
+  options[:id] = "eip_#{model_name.underscore}-#{attribute}_trigger"
+  path_options = {:attribute => attribute}
+  path_options.update(:read_data => true) if read_data
+  path += "?" + path_options.collect{|k,v| k.to_s + "=" + v.to_s}.join("&")
+  link_to name, path, options
+end
+</pre>
 
 

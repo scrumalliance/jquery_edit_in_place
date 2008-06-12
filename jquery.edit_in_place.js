@@ -1,54 +1,65 @@
 $.editInPlace = {
   tags : {
-    waitText : 'Wait...',
-    saveText : 'Save',
-    savingText : 'Saving...',
-    cancelText : 'Cancel',
-    orText : 'or',
-    wait : function(){
-      return "<span>"+this.waitText+"</span>";
+    waitText    : function(){
+      return 'Wait...';
     },
-    save : function(){
-      return "<input type='submit' value='"+this.saveText+"'/>";
+    saveText    : function(){
+      return 'Save';
     },
-    cancel : function(){
-      return "<a href='#'>"+this.cancelText+"</a>";
+    savingText  : function(){
+      return 'Saving...';
     },
-    otherwise : function(){
-      return "<span>"+this.orText+"</span>";
+    cancelText  : function(){
+      return 'Cancel';
     },
-    form : function(action, token){
+    orText      : function(){
+      return 'or';
+    },
+    wait        : function(){
+      return "<span>"+this.waitText()+"</span>";
+    },
+    save        : function(){
+      return "<input type='submit' value='"+this.saveText()+"'/>";
+    },
+    cancel      : function(){
+      return "<a href='#'>"+this.cancelText()+"</a>";
+    },
+    otherwise   : function(){
+      return "<span>"+this.orText()+"</span>";
+    },
+    form        : function(action, token){
       return "<form action='"+action+"' method='post'>"
         + "<input type='hidden' name='_method' value='put'/>"
         + "<input type='hidden' name='authenticity_token' value='"+token+"'/>"
       + "</form>";
     },
-    field : function(name, data, type){
+    field       : function(name, data, type){
       if(type == "text"){
         return this.textArea(name, data);
       } else { //string
         return this.textField(name, data);
       }
+      //TODO - add more types
     },
-    textField : function(name, data){
+    textField   : function(name, data){
       return "<input type='text' name='"+name+"' value='"+data+"'/>";
     },
-    textArea : function(name, data){
+    textArea    : function(name, data){
       return "<p><textarea name='"+name+"' rows='9'>"+data+"</textarea></p>";
     },
-    actions : function(){
+    actions     : function(){
       return "<div></div>";
     },
-    saving : function(){
-      return "<span>"+this.savingText+"</span>";
+    saving      : function(){
+      return "<span>"+this.savingText()+"</span>";
     },
-    error : function(message){
+    error       : function(message){
       return "<div><p>"+message+"</p></div>";
     }
   },
   
   animations : {
-    formAppear : function(form, field, elm){
+    formAppear    : function(form, field, elm){
       $(".eip-wait").hide();
       elm.fadeOut("fast");
       elm.queue(function(){
@@ -60,7 +71,7 @@ $.editInPlace = {
         $(this).dequeue();
       });
     },
-    formSubmit : function(form, field, actions){
+    formSubmit    : function(form, field, actions){
       form.addClass('.eip-submitted');
       actions.hide();
     },
@@ -74,7 +85,7 @@ $.editInPlace = {
         $(this).dequeue();
       });
     },
-    formError : function(error){
+    formError     : function(error){
       error.show(800);
       function hide(){ error.hide(800); }
       setTimeout(hide, 5000);
