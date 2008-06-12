@@ -1,0 +1,96 @@
+h1. jQuery Edit in Place plugin (for Rails)
+
+An unobtrusive, highly configurable in place editor using jQuery and Rails.
+
+h2. Requirements
+
+jQuery 1.2.x
+Rails 2.x
+
+Rails with jQuery intead of prototype, references to do so:
+
+* http://errtheblog.com/posts/73-the-jskinny-on-jquery
+  An article by Chris Wanstrath explaining the goodness of using jquery with rails.
+* http://ennerchi.com/projects/jrails
+  A plugin which subsititutes the basic rails javascript helpers based in prototype with jquery,
+  I personaly don't use it, but it's well written and is a good start for jQuery + Rails.
+
+h1. How to use it
+
+h2. The model:
+
+In pseudo-code
+
+<pre>
+Person
+  string *:name*
+  text *:biography*
+</pre>
+
+h2. The view:
+
+<pre>
+&lt;h1&gt;&lt;%= @person.name %>&lt;/h1&gt;
+&lt;h2&gt;Biography&lt;/h2&gt;
+&lt;%= @person.biography %&gt;
+</pre>
+
+h2. The controller:
+
+You can copy this, specially options_for_edit_in_place method, which is indispensable. I ommited all methods
+in the controller that are not bound to the edit in place process.
+
+<pre>
+class PeopleController
+
+  def edit
+    @person = Persona.find(params[:id])
+    
+    respond_to do |wants|
+      wants.html
+      wants.js{
+        options_for_edit_in_place(@person, params)
+      }
+    end
+  end
+  
+  def update
+    @person = Person.find(params[:id])
+    
+    respond_to do |wants|
+      if @person.update_attributes(params[:person])
+        wants.html { 
+          flash[:notice] = 'Person was successfully updated.'
+          redirect_to(@person)
+        }
+        wants.json { render :json => @person.to_json }
+      else
+        wants.html { render :action => "edit" }
+        wants.json { render :json => @person.errors.full_messages.to_json, :status => :unprocessable_entity }
+      end
+    end
+  end
+  
+  private
+  
+  def options_for_edit_in_place(object, request_params)
+    attribute_metadata = object.class.content_columns.select{|v| v.name == request_params[:attribute]}.first
+    if request_params[:attribute] && attribute_metadata
+      @options = {
+        :token => form_authenticity_token,
+        :url => url_for(object),
+        :model => object.class.to_s.underscore,
+        :attr => request_params[:attribute],
+        :type => attribute_metadata.type
+      }
+      @options.update(:data => object[request_params[:attribute]]) if request_params[:read_data]
+    else
+      render :nothing => true, :status => :not_found
+    end
+  end
+end
+</pre>
+
+h1. Options and personalization
+
+
