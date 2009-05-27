@@ -35,6 +35,28 @@ h2. The view:
 </div>
 </pre>
 
+h2. The RJS template for edit:
+
+<pre>
+try{
+  $("#eip_person-<%= @options[:attr] %>").each(function(){
+    $(this).editInPlace(<%= @options.to_json %>);
+  });
+} catch(e){ console.log(e); }
+</pre>
+
+<code>console.log(e)</code> is used in Safari and Firefox (firebug) to display errors, if you're using another browser,
+define this at the beginning of your application.js file:
+
+<pre>
+if(!window.console){
+  var console = { log: function(){} };
+  console.log = function(message){
+    alert(message);
+  };
+}
+</pre>
+
 h2. The controller:
 
 You can copy this, specially options_for_edit_in_place method, which is indispensable. I ommited all methods
